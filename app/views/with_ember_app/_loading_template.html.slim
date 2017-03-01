@@ -1,0 +1,22 @@
+- if loading_spinner
+  #ember-app
+    #ember-app-loading.ember-app-remove-after-load class=[options.loading_classes]
+      = render partial: 'with_ember_app/loading_message'
+
+    - if timeout_page
+      #ember-app-load-error.ember-app-remove-after-load class=[options.error_classes, options.error_hide_class]
+        = render partial: 'with_ember_app/error_message'
+
+  - if timeout_page
+    javascript:
+      setTimeout(function() {
+        var loadingElement = document.getElementById('ember-app-loading');
+
+        if (loadingElement) {
+          var parentElement = document.getElementById('ember-app');
+          var errorElement = document.getElementById('ember-app-load-error');
+
+          parentElement.removeChild(loadingElement)
+          errorElement.classList.remove('#{ options.error_hide_class }');
+        }
+      }, #{ options.timeout_period });

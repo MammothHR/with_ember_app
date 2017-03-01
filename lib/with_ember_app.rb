@@ -47,6 +47,10 @@ module WithEmberApp
       yield self
     end
 
+    # @see WithEmberApp::Assets::Defaults
+    # @param [String]  app_name
+    # @param [{string => {String => String,Boolean}}] canary
+    # @return [void]
     def add_custom_default_asset_rules_for(app_name, **kwargs)
       rule = {}
       rule[app_name] = kwargs

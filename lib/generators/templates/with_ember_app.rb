@@ -28,3 +28,13 @@ WithEmberApp.setup do |config|
   # Timeout period before error message appears (in ms)
   # config.timeout_period = 10000
 end
+
+
+# Point Rails to the location of your local Ember app
+if Rails.env.development?
+  # Assumes your app is installed in a sibling directory.
+  # (Make sure to do this for each Ember app you want to mount!)
+
+  MyApp::Application.config.assets.paths << Rails.root.join('..', 'my-ember-app', 'dist', 'assets')
+end
+

@@ -1,5 +1,5 @@
 module WithEmberApp
-  class AppsController < ApplicationController
+  class AppController < ApplicationController
     skip_before_action :authenticate_user!
     before_action :authenticate_deploy!, only: [:create]
 

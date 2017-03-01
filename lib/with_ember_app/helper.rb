@@ -1,10 +1,10 @@
 module WithEmberApp
   module Helper
+    # @option [Boolean]         loading_spinner
+    # @option [Boolean]         timeout_page
     # @option kwargs [String]   name
     # @option kwargs [<String>] names
     # @option kwargs [Hash]     payload
-    # @option kwargs [Boolean]  loading_spinner
-    # @option kwargs [Boolean]  timeout_page
     # @return [String]
     def with_ember_app(loading_spinner: true, timeout_page: false, **kwargs)
       assets = Assets::Builder.run! **kwargs

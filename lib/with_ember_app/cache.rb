@@ -2,6 +2,7 @@ module WithEmberApp
   class Cache
     attr_reader :options
 
+    # @param [WithEmberApp]  options
     def initialize(options)
       @options = options
     end
@@ -34,6 +35,9 @@ module WithEmberApp
       end
     end
 
+    # @param [String]  app_name
+    # @param [Boolean] canary
+    # @return [Integer]
     def fetch_version(app_name, canary: false)
       payload = fetch_payload app_name, canary
       payload[:timestamp] if payload.present?
@@ -41,6 +45,9 @@ module WithEmberApp
 
     private
 
+    # @param [String]  app_name
+    # @param [Boolean] canary
+    # @return [String]
     def cache_key(filename, canary)
       params = ['ember', filename]
 
@@ -48,12 +55,19 @@ module WithEmberApp
       params.join('-')
     end
 
+    # @param [String]  app_name
+    # @param [Boolean] canary
+    # @return [Hash]
     def fetch_payload(app_name, canary)
       cache_key = cache_key app_name, canary
 
       Rails.cache.fetch cache_key
     end
 
+    # @param [String]  app_name
+    # @param [Boolean] canary
+    # @param [Hash]    data
+    # @return [Void]
     def write_payload(app_name, canary, data)
       payload = {
         data: data,
@@ -64,6 +78,8 @@ module WithEmberApp
       Rails.cache.write cache_key, payload
     end
 
+    # @param [String]  app_name
+    # @return [String]
     def default_assets_for(app_name)
       Assets::Defaults.new(options, app_name).to_s
     end

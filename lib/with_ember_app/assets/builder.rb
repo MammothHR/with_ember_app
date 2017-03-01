@@ -7,15 +7,12 @@ module WithEmberApp
 
       validate :all_names_present
 
+      # @return [String]
       def execute
-        elements.flatten.join.html_safe
+        [asset_links, globals_as_js].flatten.join.html_safe
       end
 
       private
-
-      def options
-        WithEmberApp
-      end
 
       def all_names_present
         unless all_names.present?
@@ -23,30 +20,32 @@ module WithEmberApp
         end
       end
 
-      def elements
-        [asset_links, raw_javascript]
-      end
-
+      # @note Flatten out name / names inputs
+      # @return [<String>]
       attr_lazy_reader :all_names do
         names << name if name.present?
 
         names.reject { |row| row.blank? }
       end
 
+      # @return [<String>]
       def asset_links
-        names.map { |app| WithEmberApp.fetch app }.join
+        names.map { |app| WithEmberApp.fetch app }
       end
 
-      def raw_javascript
+      # @return [String]
+      def globals_as_js
         "<script type=\"text/javascript\">#{ json_payload_as_globals }</script>"
       end
 
+      # @return [String]
       def json_payload_as_globals
         json_payload.each_pair.map do |(key, value)|
           "window.#{ key } = #{ value.to_json }; "
         end.join
       end
 
+      # @return [Hash]
       def json_payload
         { envName: Rails.env }.merge(globals)
       end

@@ -4,13 +4,9 @@ module WithEmberApp
     before_action :authenticate_deploy!, only: [:create]
 
     def create
-      files = params[:files]
+      service = WithEmberApp::FileWriter.run files: params[:files], canary: params[:canary]
 
-      if files.present?
-        files.each do |filename, data|
-          WithEmberApp.write filename, data, is_canary?
-        end
-
+      if service.valid?
         render json: {}, status: :ok
       else
         render json: {}, status: :unprocessable_entity
@@ -20,17 +16,11 @@ module WithEmberApp
     private
 
     def authenticate_deploy!
-      key = params[:key]
-
-      invalid_link unless key.present? && WithEmberApp.deploy_key == key
-    end
-
-    def is_canary?
-      params[:canary] == 'true'
+      invalid_link unless WithEmberApp::Authentication.authenticate params[:key]
     end
 
     def invalid_link
-      redirect_to root_path, error: "Invalid Link"
+      render json: {}, status: :not_authorized
     end
   end
 end

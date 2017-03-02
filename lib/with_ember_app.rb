@@ -7,6 +7,8 @@ require 'action_view'
 
 require 'with_ember_app/version'
 require 'with_ember_app/cache'
+require 'with_ember_app/authentication'
+require 'with_ember_app/file_writer'
 require 'with_ember_app/assets/builder'
 require 'with_ember_app/assets/defaults'
 require 'with_ember_app/engine' if defined?(Rails::Engine)
@@ -28,11 +30,10 @@ module WithEmberApp
   mattr_accessor :timeout_period
   self.timeout_period = 10000
 
-  # @TODO Validate
   mattr_accessor :deploy_key
   self.deploy_key = nil
 
-  # @note Private
+  # @private
   mattr_accessor :_custom_asset_rules
   self._custom_asset_rules = {}.with_indifferent_access
 

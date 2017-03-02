@@ -44,7 +44,9 @@ module.exports = function(deployTarget) {
             var body = buildNotifyPayload(context);
 
             return {
-              files: body,
+              files: {
+                'my-app': body,
+              },
               key: context.config.webhooks.apiKey
             };
           },

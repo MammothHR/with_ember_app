@@ -3,3 +3,10 @@ language: ruby
 rvm:
   - 2.3.0
 before_install: gem install bundler -v 1.13.7
+
+notifications:
+  email: false
+  slack:
+    rooms:
+      - mammoth-hr:l4mZwIEXoxBcUFiMUXKG3aVF
+    on_pull_requests: true

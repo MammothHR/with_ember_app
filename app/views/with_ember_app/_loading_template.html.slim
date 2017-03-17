@@ -9,25 +9,35 @@
 
   - if timeout_page
     javascript:
-      window.withEmberApp = {
-        doneLoading: function() {
-          var elements = document.getElementsByClassName('ember-app-remove-after-load');
-          var length = elements.length;
-
-          for (var index = elements.length - 1; index >= 0; index--) {
-            elements[index].remove();
+      (function() {
+        function removeElement(el) {
+          if (el.remove) {
+            el.remove();
+          } else if (el.parentNode) {
+            el.parentNode.removeChild(el);
           }
         }
-      };
 
-      setTimeout(function() {
-        var loadingElement = document.getElementById('ember-app-loading');
-        var errorElement = document.getElementById('ember-app-load-error');
+        window.withEmberApp = {
+          doneLoading: function() {
+            var elements = document.getElementsByClassName('ember-app-remove-after-load');
+            var length = elements.length;
 
-        if (loadingElement && errorElement) {
-          var parentElement = document.getElementById('ember-app');
+            for (var index = elements.length - 1; index >= 0; index--) {
+              removeElement(elements[index]);
+            }
+          }
+        };
 
-          parentElement.removeChild(loadingElement)
-          errorElement.classList.remove('#{ options.error_hide_class }');
-        }
-      }, #{ options.timeout_period });
+        setTimeout(function() {
+          var loadingElement = document.getElementById('ember-app-loading');
+          var errorElement = document.getElementById('ember-app-load-error');
+
+          if (loadingElement && errorElement) {
+            var parentElement = document.getElementById('ember-app');
+
+            parentElement.removeChild(loadingElement)
+            errorElement.classList.remove('#{ options.error_hide_class }');
+          }
+        }, #{ options.timeout_period });
+      })();

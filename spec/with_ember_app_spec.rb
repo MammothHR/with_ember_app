@@ -145,6 +145,16 @@ describe WithEmberApp do
         expect(has_a_script_tag_for(result, 'app-vendor')).to be_falsey
         expect(has_a_style_tag_for(result, 'app-vendor')).to be_falsey
       end
+
+      it 'can have ad hoc assets' do
+        root = File.dirname __dir__
+        path = File.join root, 'spec', 'mocks', 'test.html'
+
+        WithEmberApp.add_custom_default_asset_rules_for 'app', prefix_vendor: false, dev_index: path
+        result = subject.to_s
+
+        expect(result).to eq("<foo><bar><baz>\n")
+      end
     end
 
     describe '_builder' do

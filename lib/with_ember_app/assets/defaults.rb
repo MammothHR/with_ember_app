@@ -19,26 +19,36 @@ module WithEmberApp
 
       # @return [String]
       def to_s
-        [].tap do |result|
-          if include_vendor?
-            vendor_name = if prefix_vendor?
-              app_name + '-vendor'
-            else
-              'vendor'
+        url = app_rules[:dev_index]
+
+        if url.present?
+          File.read url
+        else
+          [].tap do |result|
+            if include_vendor?
+              vendor_name = if prefix_vendor?
+                app_name + '-vendor'
+              else
+                'vendor'
+              end
+
+              result << javascript_tag(vendor_name)
+              result << stylesheet_tag(vendor_name) if include_css?
             end
 
-            result << javascript_tag(vendor_name)
-            result << stylesheet_tag(vendor_name) if include_css?
-          end
-
-          if include_app?
-            result << javascript_tag(app_name)
-            result << stylesheet_tag(app_name) if include_css?
-          end
-        end.join
+            if include_app?
+              result << javascript_tag(app_name)
+              result << stylesheet_tag(app_name) if include_css?
+            end
+          end.join
+        end
       end
 
       private
+
+      def app_rules
+        rules[app_name.to_s] || {}
+      end
 
       # @return [Hash]
       def rules

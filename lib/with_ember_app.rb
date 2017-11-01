@@ -6,11 +6,12 @@ require 'slim'
 require 'action_view'
 
 require 'with_ember_app/version'
-require 'with_ember_app/cache'
+require 'with_ember_app/adapter/base'
+require 'with_ember_app/adapter/file'
+require 'with_ember_app/adapter/redis'
 require 'with_ember_app/authentication'
 require 'with_ember_app/file_writer'
 require 'with_ember_app/assets/builder'
-require 'with_ember_app/assets/defaults'
 require 'with_ember_app/engine' if defined?(Rails::Engine)
 require 'with_ember_app/railtie' if defined?(Rails::Railtie)
 
@@ -33,6 +34,12 @@ module WithEmberApp
   mattr_accessor :deploy_key
   self.deploy_key = nil
 
+  mattr_accessor :cache
+  self.cache = nil
+
+  mattr_accessor :adapter
+  self.adapter = nil
+
   # @private
   mattr_accessor :_custom_asset_rules
   self._custom_asset_rules = {}.with_indifferent_access
@@ -40,15 +47,14 @@ module WithEmberApp
   class << self
     delegate :write, :fetch, :fetch_version, to: :cache
 
-    attr_lazy_reader :cache do
-      Cache.new(self)
-    end
-
     def setup
+      self.adapter = Rails.env.development? ? Adapter::File : Adapter::Redis
+      self.cache = self.adapter.new(self)
+
       yield self
     end
 
-    # @see WithEmberApp::Assets::Defaults
+    # @see WithEmberApp::Adapter::File
     # @param [String]  app_name
     # @param [{string => {String => String,Boolean}}] canary
     # @return [void]

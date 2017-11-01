@@ -37,7 +37,9 @@
             var parentElement = document.getElementById('ember-app');
 
             parentElement.removeChild(loadingElement)
-            errorElement.classList.remove('#{ options.error_hide_class }');
+
+            // IE 9 does not support classList
+            errorElement.classList && errorElement.classList.remove && errorElement.classList.remove('#{ options.error_hide_class }');
           }
         }, #{ options.timeout_period });
       })();

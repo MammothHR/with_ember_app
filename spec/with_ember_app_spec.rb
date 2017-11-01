@@ -33,7 +33,12 @@ describe WithEmberApp do
     end
   end
 
-  describe 'caching' do
+  describe 'redis-adapter' do
+    it 'has the correct adapter' do
+      WithEmberApp.setup {}
+      expect(WithEmberApp.adapter).to eq(WithEmberApp::Adapter::Redis)
+    end
+
     it 'writes' do
       WithEmberApp.write 'app-name', 'fo-ba-ba'
       result = Rails.cache.fetch('ember-app-name')
@@ -55,17 +60,10 @@ describe WithEmberApp do
       expect(result).to_not be_blank
     end
 
-    context 'in development' do
-      it 'fetches' do
-        allow(Rails).to receive(:env).and_return(ActiveSupport::StringInquirer.new('development'))
-        result = WithEmberApp.fetch 'app-name'
-
-        expect(result).to be_present
-      end
-    end
-
     context 'with canary' do
       it 'stores under a different key' do
+        WithEmberApp.setup {}
+
         WithEmberApp.write 'app-name', 'foo'
         WithEmberApp.write 'app-name', 'bar', canary: true
 
@@ -75,8 +73,39 @@ describe WithEmberApp do
     end
   end
 
-  describe 'assets' do
-    describe 'defaults' do
+  describe 'file adapter' do
+    before(:each) do
+      allow(Rails).to receive(:env).and_return(ActiveSupport::StringInquirer.new('development'))
+      WithEmberApp.setup {}
+    end
+
+    subject do
+      WithEmberApp.fetch 'app'
+    end
+
+    it 'has the correct adapter' do
+      expect(WithEmberApp.adapter).to eq(WithEmberApp::Adapter::File)
+    end
+
+    it 'fetches' do
+      expect(subject).to be_present
+    end
+
+    context 'when a dev_index is provided' do
+      before(:each) do
+        root = File.dirname __dir__
+        path = File.join root, 'spec', 'mocks', 'test.html'
+
+        WithEmberApp.add_custom_default_asset_rules_for 'app', prefix_vendor: false, dev_index: path
+      end
+
+      it 'can have ad hoc assets' do
+        result = subject.to_s
+        expect(result).to eq("<foo><bar><baz>\n")
+      end
+    end
+
+    context 'when dev_index is not present and no inferred-index is possible' do
       def has_a_script_tag_for(result, app)
         result =~ /(script)[^\<]*(#{ app }.js)[^\<]*(<\/script>)/
       end
@@ -84,8 +113,6 @@ describe WithEmberApp do
       def has_a_style_tag_for(result, app)
         result =~ /(link)[^\<]*(#{ app }.css)[^\>]*(>)/
       end
-
-      let(:subject) { WithEmberApp::Assets::Defaults.new(WithEmberApp, 'app') }
 
       it 'works with no settings' do
         result = subject.to_s
@@ -145,24 +172,16 @@ describe WithEmberApp do
         expect(has_a_script_tag_for(result, 'app-vendor')).to be_falsey
         expect(has_a_style_tag_for(result, 'app-vendor')).to be_falsey
       end
-
-      it 'can have ad hoc assets' do
-        root = File.dirname __dir__
-        path = File.join root, 'spec', 'mocks', 'test.html'
-
-        WithEmberApp.add_custom_default_asset_rules_for 'app', prefix_vendor: false, dev_index: path
-        result = subject.to_s
-
-        expect(result).to eq("<foo><bar><baz>\n")
-      end
     end
+  end
 
-    describe '_builder' do
+  describe 'assets' do
+    describe 'builder' do
       let(:service) { WithEmberApp::Assets::Builder }
 
       it 'works with just a name' do
         results = service.run! name: 'foo', loading_spinner: false
-        expect(results.to_s).to eq('<script type="text/javascript">window.envName = "test"; </script>')
+        expect(results.to_s).to include('<script type="text/javascript">window.envName = "test"; </script>')
       end
 
       it 'validates that at least one name is present' do

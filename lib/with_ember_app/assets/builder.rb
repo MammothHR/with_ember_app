@@ -9,7 +9,7 @@ module WithEmberApp
 
       # @return [String]
       def execute
-        [asset_links, globals_as_js].flatten.join.html_safe
+        [globals_as_js, asset_links].flatten.join.html_safe
       end
 
       private

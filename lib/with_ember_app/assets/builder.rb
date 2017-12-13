@@ -1,7 +1,9 @@
 module WithEmberApp
   module Assets
     class Builder < ActiveInteraction::Base
+      # When building for a single app
       string  :name, default: nil
+      # When building for multiple apps
       array   :names, default: -> { [] }
       hash    :globals, strip: false, default: -> { {} }
 

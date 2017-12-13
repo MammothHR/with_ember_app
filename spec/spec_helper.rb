@@ -11,6 +11,10 @@ module Rails
     def env
       @_env ||= ActiveSupport::StringInquirer.new(ENV["RAILS_ENV"] || ENV["RACK_ENV"] || "test")
     end
+
+    def root
+      Pathname.new Dir.pwd
+    end
   end
 end
 

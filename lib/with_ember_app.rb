@@ -40,6 +40,9 @@ module WithEmberApp
   mattr_accessor :adapter
   self.adapter = nil
 
+  mattr_accessor :raise_if_index_not_found
+  self.raise_if_index_not_found = false
+
   # @private
   mattr_accessor :_custom_asset_rules
   self._custom_asset_rules = {}.with_indifferent_access

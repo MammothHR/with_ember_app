@@ -9,6 +9,9 @@ module WithEmberApp
     class File < Base
       attr_reader :app_name
 
+      class IndexNotFound < StandardError
+      end
+
       # @param [String]  app_name
       # @param [Boolean] canary
       # @return [String]
@@ -21,8 +24,10 @@ module WithEmberApp
           ::File.read url
         elsif can_infer_index?
           ::File.read inferred_index_file
-        else
+        elsif !options.raise_if_index_not_found
           generate_default_payload
+        else
+          raise IndexNotFound,  "WithEmberAppError: attempted to find an index file at #{ url } and #{ inferred_index_file } and neither was readable."
         end
       end
 

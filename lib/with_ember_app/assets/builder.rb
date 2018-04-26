@@ -28,11 +28,12 @@ module WithEmberApp
         names << name if name.present?
 
         names.reject { |row| row.blank? }
+        names
       end
 
       # @return [<String>]
       def asset_links
-        names.map { |app| WithEmberApp.fetch app }
+        all_names.map { |app| WithEmberApp.fetch app }
       end
 
       # @return [String]

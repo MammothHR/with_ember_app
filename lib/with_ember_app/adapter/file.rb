@@ -52,7 +52,7 @@ module WithEmberApp
         inferred_index_file.present? && ::File.file?(inferred_index_file)
       end
 
-      attr_lazy_reader :inferred_index_file do
+      def inferred_index_file
         dasherized_name = app_name.to_s.dasherize
         Rails.root.join '..', dasherized_name, 'dist', "#{ dasherized_name }.html"
       end

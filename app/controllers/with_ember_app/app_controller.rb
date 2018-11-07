@@ -5,7 +5,7 @@ module WithEmberApp
     before_action :authenticate_deploy!, only: [:create]
 
     def create
-      service = WithEmberApp::FileWriter.run files: params[:files], canary: params[:canary]
+      service = WithEmberApp::FileWriter.run files: params[:files].to_hash, canary: params[:canary]
 
       if service.valid?
         render json: {}, status: :ok

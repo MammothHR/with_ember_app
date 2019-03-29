@@ -189,15 +189,15 @@ describe WithEmberApp do
       end
 
       it 'fetches assets' do
-        expect(WithEmberApp).to receive(:fetch).with('foo').and_return('<bar-script-baz>')
+        expect(WithEmberApp).to receive(:fetch).with('foo', { canary: false }).and_return('<bar-script-baz>')
 
         results = service.run! name: 'foo'
         expect(results.to_s).to include('bar-script-baz')
       end
 
       it 'works with an array of names' do
-        expect(WithEmberApp).to receive(:fetch).with('foo').and_return('<foo-script-baz>')
-        expect(WithEmberApp).to receive(:fetch).with('bar').and_return('<bar-script-baz>')
+        expect(WithEmberApp).to receive(:fetch).with('foo', { canary: false }).and_return('<foo-script-baz>')
+        expect(WithEmberApp).to receive(:fetch).with('bar', { canary: false }).and_return('<bar-script-baz>')
 
         result = service.run!(names: ['foo', 'bar']).to_s
         expect(result).to include('foo-script-baz')

@@ -7,7 +7,8 @@ module WithEmberApp
     # @option kwargs [Hash]     payload
     # @return [String]
     def with_ember_app(loading_spinner: true, timeout_page: false, **kwargs)
-      assets = Assets::Builder.run! **kwargs
+      canary = kwargs[:canary] || request.params[:canary]
+      assets = Assets::Builder.run! canary: canary, **kwargs
       options = WithEmberApp
 
       render(partial: 'with_ember_app/loading_template', locals: {

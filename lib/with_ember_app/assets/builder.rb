@@ -6,6 +6,7 @@ module WithEmberApp
       # When building for multiple apps
       array   :names, default: -> { [] }
       hash    :globals, strip: false, default: -> { {} }
+      boolean :canary, default: false
 
       validate :all_names_present
 
@@ -33,7 +34,7 @@ module WithEmberApp
 
       # @return [<String>]
       def asset_links
-        all_names.map { |app| WithEmberApp.fetch app }
+        all_names.map { |app| WithEmberApp.fetch app, canary: canary }
       end
 
       # @return [String]

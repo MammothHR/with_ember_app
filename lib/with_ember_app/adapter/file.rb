@@ -40,7 +40,7 @@ module WithEmberApp
 
       # @return [Hash]
       def app_rules
-        rules[app_name.to_s] || {}
+        rules[app_name.to_s.underscore] || {}
       end
 
       # @return [Hash]
@@ -54,7 +54,9 @@ module WithEmberApp
 
       def inferred_index_file
         dasherized_name = app_name.to_s.dasherize
-        Rails.root.join '..', dasherized_name, 'dist', "#{ dasherized_name }.html"
+        dist_path = app_rules[:dist_path].presence || Rails.root.join('..', dasherized_name, 'dist')
+
+        dist_path.join "#{ dasherized_name }.html"
       end
 
       # @!group Default Payload Generation

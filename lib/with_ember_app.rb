@@ -69,4 +69,3 @@ module WithEmberApp
     end
   end
 end
-
